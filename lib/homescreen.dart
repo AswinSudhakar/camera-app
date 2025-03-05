@@ -21,10 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _initializeCamera().then((_) {
-      // Only proceed with loading images and camera use once the camera is initialized
-      _loadImages();
-    });
+    _initializeCamera();
+
+    _loadImages();
+
     super.initState();
   }
 
@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     CircleAvatar(
+                      radius: 30,
                       backgroundImage: latestimg == null
                           ? AssetImage('assets/lufy.jpg')
                           : FileImage(latestimg!),
@@ -69,7 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ));
                         },
                       ),
-                      radius: 30,
                     ),
                     IconButton(
                         iconSize: 65,
@@ -96,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
               CameraController(availablecameras.first, ResolutionPreset.high);
         });
         await cameraController!.initialize();
+
         if (!mounted) return;
         setState(() {});
       } else {
@@ -108,30 +109,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _takePicture() async {
     try {
-      if (cameraController == null || !cameraController!.value.isInitialized) {
-        print("Camera is not initialized yet.");
-        return; // Prevent taking picture if camera is not initialized
-      }
-
       XFile picture = await cameraController!.takePicture();
+
       final directory = await getApplicationDocumentsDirectory();
+
+      //Y generate a file path using the current timestamp
       final path =
           "${directory.path}/${DateTime.now().microsecondsSinceEpoch}.jpg";
 
-      final image = await File(picture.path);
+      final image = File(picture.path);
 
       // Ensure the file exists and is not empty
-      if (await image.exists() && await image.length() > 0) {
-        await image.copy(path);
-        setState(() {
-          latestimg = image;
-        });
+      // if (await image.exists() && await image.length() > 0) {
+      // you copy the image to the new path you generated earlier
+      await image.copy(path);
+      setState(() {
+        latestimg = image;
+      });
 
-        images.value.insert(0, image);
-        images.notifyListeners();
-      } else {
-        print("Error: The image file is empty or doesn't exist at path: $path");
-      }
+      images.value.insert(0, image);
+      images.notifyListeners();
+      // } else {
+      //   print("Error: The image file is empty or doesn't exist at path: $path");
+      // }
     } catch (e) {
       print('error taking picture :$e');
     }
@@ -140,12 +140,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadImages() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
+
       final img = directory.listSync().whereType<File>().toList();
+
+      // sorts the img list based on the modification date of each file.
 
       img.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
 
-      // images.value = [...images.value, ...img];
       images.value = img;
+      images.notifyListeners();
     } catch (e) {
       print('Error LOading IMagess: $e');
     }

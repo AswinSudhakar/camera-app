@@ -12,15 +12,16 @@ class StartScreen extends StatelessWidget {
         backgroundColor: Colors.blue,
         centerTitle: true,
         title: Text(
-          'Camera App',
-          style: TextStyle(color: Colors.white),
+          'Photo Capture App',
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
         ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
+            ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(Colors.blue)),
                 onPressed: () {
@@ -30,9 +31,18 @@ class StartScreen extends StatelessWidget {
                         builder: (context) => HomeScreen(),
                       ));
                 },
-                icon: Text(
-                  'Open Camera',
-                  style: TextStyle(color: Colors.white),
+                child: SizedBox(
+                  width: 180,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Icon(Icons.camera),
+                      Text(
+                        'Open Camera',
+                        style: TextStyle(fontSize: 25, color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ))
           ],
         ),

@@ -6,7 +6,7 @@ import 'package:flutter_camera_task3/screens/details.dart';
 import 'package:path_provider/path_provider.dart';
 
 class GalleryScreeen extends StatelessWidget {
-  GalleryScreeen({super.key});
+  const GalleryScreeen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,17 +55,14 @@ class GalleryScreeen extends StatelessWidget {
                   style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
                 ),
               )
-            // : Center(
-            //     child: Text('images found'),
-            //   ));
             : ValueListenableBuilder(
                 valueListenable: images,
                 builder: (context, value, child) {
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
-                        crossAxisSpacing: 4,
-                        mainAxisSpacing: 4),
+                        crossAxisSpacing: 6,
+                        mainAxisSpacing: 6),
                     itemCount: value.length,
                     itemBuilder: (context, index) {
                       final file = value[index];
@@ -80,6 +77,8 @@ class GalleryScreeen extends StatelessWidget {
                           ));
                         },
                         child: Card(
+                          shadowColor: const Color.fromARGB(255, 101, 91, 91),
+                          elevation: 30,
                           child: Image.file(
                             file,
                             fit: BoxFit.cover,
@@ -97,13 +96,10 @@ class GalleryScreeen extends StatelessWidget {
 
   Future<void> clearAllImages() async {
     try {
-      // Get the app's document directory
       final directory = await getApplicationDocumentsDirectory();
 
-      // List all files in the directory
       final files = directory.listSync();
 
-      // Delete all files in the directory
       for (var file in files) {
         if (file is File) {
           await file.delete();
@@ -111,10 +107,10 @@ class GalleryScreeen extends StatelessWidget {
         }
       }
 
-      // Clear the ValueNotifier list
       images.value = [];
 
       images.notifyListeners();
+
       print('All images deleted and ValueNotifier list cleared.');
     } catch (e) {
       print('Error clearing images: $e');
